@@ -1,6 +1,6 @@
 function randomInt(min, max)
 {
-  return Math.floor(Math.random() * (max - min)) + min;
+  return Math.floor(Math.random() * (max - (min - 1))) + min;
 }
 
 function getQuantity(dieString)
@@ -29,7 +29,7 @@ function basicDice(diceString)
   let dice = [];
   for(i = 0; i < decomposed[0]; i++)
   {
-    dice[i] = randomInt(0, decomposed[1]);
+    dice[i] = randomInt(1, decomposed[1]);
   }
   return dice;
 }
@@ -42,6 +42,80 @@ function sum(dice)
     total += die;
   }
   return total;
+}
+
+function initializeArrayLow(item, index, arr)
+{
+  arr[index] = 0;
+}
+
+function initializeArrayHigh(item, index, arr)
+{
+  arr[index] = 4000;
+}
+
+//The following 4 functons are intended to keep or drop a number of dice based on the number specified number in the second parameter.
+//expected format for string is "NdSFQ" to indicate rolling N S-sided dice and then performing function F (kl, kh, dl, dh) on a certain number of dice. 
+function keepHighest(dice, number = 1)
+{
+  let diceObject = {};
+  let indices = [];
+  let highest = []
+  for(let i = 0; i < number; i++)
+  {
+    for(let j = 0; j < dice.length; j++)
+    {
+      if((highest[i] == undefined || highest[i] < dice[j]) && (indices.indexOf(j) != -1))
+      {
+        highest[i] = dice[j];
+        indices[i] = j;
+      }
+    }
+  }
+  for (let i = 0; i < indices.length; i++)
+  {
+
+  }
+  diceObject.highest = highest;
+  diceObject.dice = dice;
+  diceObject.highestIndices = indices;
+  return diceObject
+}
+
+function keepLowest(dice, number = 1)
+{
+
+}
+
+function dropHighest(dice, number = 1)
+{
+
+}
+
+function dropLowest(dice, number = 1)
+{
+
+}
+
+//for a string of format "NdS + B", roll N S-sided dice and add B to the total, then return it. If there is no " + B", then 
+//just return the sum of the dice roll.
+function diceWithAddend(diceString)
+{
+  let segmented;
+  if(diceString.indexOf("+") >= 0)
+  {
+    segmented = diceString.split("+");
+    return sum(basicDice(segmented[0])) + parseInt(segmented[1].trim());
+  }
+  else if(diceString.indexOf("-") >= 0)
+  {
+    segmented = diceString.split("-");
+    return sum(basicDice(segmented[0])) - parseInt(segmented[1].trim());
+  }
+  else
+  {
+    return sum(basicDice(diceString.trim()));
+  }
 }
 
 function extractParenth(diceString)
@@ -78,7 +152,7 @@ function breakOnMath(diceString)
 //     results[i] = 0;
 //     for(let i = 0; i < quantity; i++)
 //     {
-//       results[i] += randomInt(0, magnitude);
+//       results[i] += randomInt(1, magnitude);
 //     }
 //     results[i] += addend;
 //   }
